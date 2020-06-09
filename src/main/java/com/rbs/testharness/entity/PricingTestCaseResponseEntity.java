@@ -1,24 +1,50 @@
-package com.rbs.testharness.model;
+package com.rbs.testharness.entity;
 
-public class PricingTestCaseResponse {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "THS_PRC_TEST_TXN_TB")
+public class PricingTestCaseResponseEntity extends BaseEntity{
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "TEST_TXN_ID")
 	private Integer testTransactionId;
+	@Column(name = "TEST_SET_ID")
 	private Integer testSetId;
+	@Column(name = "TEST_TXN_NO")
 	private String testTransactionNo;
+	@Column(name = "APPL_IDENTITY")
 	private String applicationIdentity;
+	@Column(name = "BANK_DIVISION")
 	private String bankDivision;
+	@Column(name = "PROD_FAMILY")
 	private String productFamily;
+	@Column(name = "PROD_NAME")
 	private String productName;
+	@Column(name = "RISK_BAND")
 	private Integer riskBand;
+	@Column(name = "BORROWING_AMT")
 	private Integer borrowingAmount;
+	@Column(name = "TERM")
 	private Integer termFactor;
+	@Column(name = "ACT_AIR")
 	private Double actualAir;
+	@Column(name = "ACT_APR")
 	private Double actualApr;
+	@Column(name = "EXCPT_AIR")
 	private Double expectetAir;
+	@Column(name = "EXCPT_APR")
 	private Double expectetApr;
+	@Column(name = "TEST_TXN_FLAG")
 	private Character testTransactionFlag;
+	@Column(name = "XML_DIFF")
 	private String xmlDifference;
-	private Long totalRecord;
 	
 	public Integer getTestTransactionId() {
 		return testTransactionId;
@@ -56,12 +82,7 @@ public class PricingTestCaseResponse {
 	public void setProductFamily(String productFamily) {
 		this.productFamily = productFamily;
 	}
-	public String getProductName() {
-		return productName;
-	}
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+	
 	public Integer getRiskBand() {
 		return riskBand;
 	}
@@ -116,10 +137,10 @@ public class PricingTestCaseResponse {
 	public void setXmlDifference(String xmlDifference) {
 		this.xmlDifference = xmlDifference;
 	}
-	public Long getTotalRecord() {
-		return totalRecord;
+	public String getProductName() {
+		return productName;
 	}
-	public void setTotalRecord(Long totalRecord) {
-		this.totalRecord = totalRecord;
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 }

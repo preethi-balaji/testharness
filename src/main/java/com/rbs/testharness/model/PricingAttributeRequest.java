@@ -10,6 +10,7 @@ public class PricingAttributeRequest {
 	private String bankDivision;
 	private String productFamily;
 	private String productName;
+	private String userId;
 	
 	
 	public List<Integer> getRiskFactor() {
@@ -68,5 +69,13 @@ public class PricingAttributeRequest {
 
 	public void setBorrowingAmount(List<Integer> borrowingAmount) {
 		this.borrowingAmount = borrowingAmount;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }

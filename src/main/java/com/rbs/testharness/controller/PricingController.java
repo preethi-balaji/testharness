@@ -10,35 +10,35 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rbs.testharness.model.PricingAttributeRequest;
-import com.rbs.testharness.model.PricingResultResponse;
-import com.rbs.testharness.model.PricingTestCaseAirApr;
+import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
 import com.rbs.testharness.service.PricingService;
 
 @RestController
-@RequestMapping("/com/rcb/th")
+@RequestMapping("/rbs/th")
 public class PricingController {
 	
 	@Autowired
 	private PricingService pricingService;
 	
-	@RequestMapping(value="/generate/testcase-scenarios", method=RequestMethod.POST)
+	@RequestMapping(value="/businessAttributes", method=RequestMethod.GET)
+	public List<PricingBusinessAttribute> businessAttributes(){
+		return pricingService.businessAttributes();
+	}
+	
+	
+	@RequestMapping(value="/testdata", method=RequestMethod.POST)
 	private List<PricingTestCaseResponse> generateTestCaseCombination(@RequestBody PricingAttributeRequest attributeInputList) {
 		return pricingService.generateTestCaseCombination(attributeInputList);
 	}
 	
-	@RequestMapping(value="/generate/testcase-airapr", method=RequestMethod.POST)
-	private List<PricingTestCaseAirApr> generateTestCaseAirApr(@RequestBody List<PricingTestCaseResponse> testCaseOutputList) {
-		return pricingService.generateTestCaseAirApr(testCaseOutputList);
+	@RequestMapping(value="/testdata/airapr/{testsetid}", method=RequestMethod.GET)
+	private List<PricingTestCaseResponse> generateTestCaseAirApr(@PathVariable Integer testsetid) {
+		return pricingService.generateTestCaseAirApr(testsetid);
 	}
 	
-	@RequestMapping(value="/generate/testcase-result", method=RequestMethod.POST)
-	private PricingResultResponse generateTestCaseResult(@RequestBody List<PricingTestCaseAirApr> testCaseAirAprList) {
-		return pricingService.generateTestCaseResult(testCaseAirAprList);
-	}
-	
-	@RequestMapping(value="testcase/pagination/pageno/{pageno}", method=RequestMethod.POST)
-	private List<PricingTestCaseResponse> findTestCasesByPageNo(@PathVariable Integer pageno) {
-		return pricingService.findByPageNo(pageno);
+	@RequestMapping(value="testdata/{testsetid}/pagination/pageno/{pageno}", method=RequestMethod.POST)
+	private List<PricingTestCaseResponse> findTestCasesByPageNo(@PathVariable Integer testsetid,@PathVariable Integer pageno) {
+		return pricingService.findByPageNo(testsetid,pageno);
 	}
 }
