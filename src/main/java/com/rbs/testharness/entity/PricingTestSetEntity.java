@@ -16,13 +16,13 @@ public class PricingTestSetEntity extends BaseEntity{
 	@Column(name = "TEST_SET_ID")
 	private Integer testSetId;
 	@Column(name = "APPL_IDENTITY")
-	private String applicationIdentity;
+	private Integer applicationIdentity;
 	@Column(name = "BANK_DIVISION")
-	private String bankDivision;
+	private Integer bankDivision;
 	@Column(name = "PROD_FAMILY")
-	private String productFamily;
+	private Integer productFamily;
 	@Column(name = "PROD_NAME")
-	private String productName;
+	private Integer productName;
 	@Column(name = "RISK_BAND")
 	private String riskBand;
 	@Column(name = "BORROWING_AMT")
@@ -38,10 +38,10 @@ public class PricingTestSetEntity extends BaseEntity{
 	public void setTestSetId(Integer testSetId) {
 		this.testSetId = testSetId;
 	}
-	public String getBankDivision() {
+	public Integer getBankDivision() {
 		return bankDivision;
 	}
-	public void setBankDivision(String bankDivision) {
+	public void setBankDivision(Integer bankDivision) {
 		this.bankDivision = bankDivision;
 	}
 	
@@ -58,10 +58,10 @@ public class PricingTestSetEntity extends BaseEntity{
 	public void setProcessedFlag(Character processedFlag) {
 		this.processedFlag = processedFlag;
 	}
-	public String getApplicationIdentity() {
+	public Integer getApplicationIdentity() {
 		return applicationIdentity;
 	}
-	public void setApplicationIdentity(String applicationIdentity) {
+	public void setApplicationIdentity(Integer applicationIdentity) {
 		this.applicationIdentity = applicationIdentity;
 	}
 	public String getTermFactor() {
@@ -70,16 +70,16 @@ public class PricingTestSetEntity extends BaseEntity{
 	public void setTermFactor(String termFactor) {
 		this.termFactor = termFactor;
 	}
-	public String getProductFamily() {
+	public Integer getProductFamily() {
 		return productFamily;
 	}
-	public void setProductFamily(String productFamily) {
+	public void setProductFamily(Integer productFamily) {
 		this.productFamily = productFamily;
 	}
-	public String getProductName() {
+	public Integer getProductName() {
 		return productName;
 	}
-	public void setProductName(String productName) {
+	public void setProductName(Integer productName) {
 		this.productName = productName;
 	}
 	public String getBorrowingAmount() {
@@ -89,3 +89,4 @@ public class PricingTestSetEntity extends BaseEntity{
 		this.borrowingAmount = borrowingAmount;
 	}
 }
+
