@@ -109,13 +109,39 @@ public class PricingService {
 		}
 		//Saving to Transaction Testcase DB
 		pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.saveAll(pricingTestCaseResponseEntityList);
+		List<Integer> attributeIds=new ArrayList<>();	
+			attributeIds.add(attributeInput.getApplicationIdentity());	
+			attributeIds.add(attributeInput.getBankDivision());	
+			attributeIds.add(attributeInput.getProductName());	
+			attributeIds.add(attributeInput.getProductFamily());	
+				
+			List<PricingBusinessAttributeEntity> pricingBusinessAttributeList = parameterAttributeRepository.findByAttributeIdIn(attributeIds);
 		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
 		if(pricingTestCaseResponseEntityList!=null && pricingTestCaseResponseEntityList.size()>0) {
-			pricingTestCaseResponseEntityList.forEach(pricingTestCaseResponseEntity->{
+			String appIdentity="";String bankDiv="";
+			String productName=""; String productFamily="";
+			for(PricingBusinessAttributeEntity s:pricingBusinessAttributeList) {
+				if(s.getRefDataKey().startsWith("AP")) {
+					appIdentity=s.getRefDataDesc();
+				}
+				else if(s.getRefDataKey().startsWith("BU")) {
+					bankDiv=s.getRefDataDesc();
+				}
+				else if(s.getRefDataKey().startsWith("PR")) {
+					productName=s.getRefDataDesc();}
+				else if(s.getRefDataKey().startsWith("PF")) {
+					productFamily=s.getRefDataDesc();}
+			}
+		for(PricingTestCaseResponseEntity resposeList:pricingTestCaseResponseEntityList) {
 				PricingTestCaseResponse testCase=new PricingTestCaseResponse();
-				BeanUtils.copyProperties(pricingTestCaseResponseEntity, testCase);
+				BeanUtils.copyProperties(resposeList, testCase);
+				testCase.setApplicationIdentity(appIdentity);
+				testCase.setBankDivision(bankDiv);
+				testCase.setProductName(productName);
+				testCase.setProductFamily(productFamily);
+				testCase.setTotalRecord((long) pricingTestCaseResponseEntityList.size());
 				pricingTestCaseResponseList.add(testCase);
-			});
+			}
 		}else {
 			throw new THException(HttpStatus.NOT_FOUND,"Test Case not found","Not found");
 		}
