@@ -34,13 +34,15 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	@Column(name = "TERM")
 	private Integer termFactor;
 	@Column(name = "ACT_AIR")
-	private Integer actualAir;
+	private Double actualAir;
 	@Column(name = "ACT_APR")
-	private Integer actualApr;
+	private Double actualApr;
+	
 	@Column(name = "EXCPT_AIR")
-	private Integer expectetAir;
+	private Double expectetAir;
 	@Column(name = "EXCPT_APR")
-	private Integer expectetApr;
+	private Double expectetApr;
+	
 	@Column(name = "TEST_TXN_FLAG")
 	private Character testTransactionFlag;
 	@Column(name = "XML_DIFF")
@@ -101,28 +103,28 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	public void setTermFactor(Integer termFactor) {
 		this.termFactor = termFactor;
 	}
-	public Integer getActualAir() {
+	public Double getActualAir() {
 		return actualAir;
 	}
-	public void setActualAir(Integer actualAir) {
+	public void setActualAir(Double actualAir) {
 		this.actualAir = actualAir;
 	}
-	public Integer getActualApr() {
+	public Double getActualApr() {
 		return actualApr;
 	}
-	public void setActualApr(Integer actualApr) {
+	public void setActualApr(Double actualApr) {
 		this.actualApr = actualApr;
 	}
-	public Integer getExpectetAir() {
+	public Double getExpectetAir() {
 		return expectetAir;
 	}
-	public void setExpectetAir(Integer expectetAir) {
+	public void setExpectetAir(Double expectetAir) {
 		this.expectetAir = expectetAir;
 	}
-	public Integer getExpectetApr() {
+	public Double getExpectetApr() {
 		return expectetApr;
 	}
-	public void setExpectetApr(Integer expectetApr) {
+	public void setExpectetApr(Double expectetApr) {
 		this.expectetApr = expectetApr;
 	}
 	public Character getTestTransactionFlag() {
@@ -144,4 +146,3 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 		this.productName = productName;
 	}
 }
-
