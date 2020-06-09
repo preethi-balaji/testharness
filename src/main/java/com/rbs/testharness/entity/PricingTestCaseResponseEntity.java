@@ -20,13 +20,13 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	@Column(name = "TEST_TXN_NO")
 	private String testTransactionNo;
 	@Column(name = "APPL_IDENTITY")
-	private String applicationIdentity;
+	private Integer applicationIdentity;
 	@Column(name = "BANK_DIVISION")
-	private String bankDivision;
+	private Integer bankDivision;
 	@Column(name = "PROD_FAMILY")
-	private String productFamily;
+	private Integer productFamily;
 	@Column(name = "PROD_NAME")
-	private String productName;
+	private Integer productName;
 	@Column(name = "RISK_BAND")
 	private Integer riskBand;
 	@Column(name = "BORROWING_AMT")
@@ -34,13 +34,13 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	@Column(name = "TERM")
 	private Integer termFactor;
 	@Column(name = "ACT_AIR")
-	private Double actualAir;
+	private Integer actualAir;
 	@Column(name = "ACT_APR")
-	private Double actualApr;
+	private Integer actualApr;
 	@Column(name = "EXCPT_AIR")
-	private Double expectetAir;
+	private Integer expectetAir;
 	@Column(name = "EXCPT_APR")
-	private Double expectetApr;
+	private Integer expectetApr;
 	@Column(name = "TEST_TXN_FLAG")
 	private Character testTransactionFlag;
 	@Column(name = "XML_DIFF")
@@ -64,22 +64,22 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	public void setTestTransactionNo(String testTransactionNo) {
 		this.testTransactionNo = testTransactionNo;
 	}
-	public String getApplicationIdentity() {
+	public Integer getApplicationIdentity() {
 		return applicationIdentity;
 	}
-	public void setApplicationIdentity(String applicationIdentity) {
+	public void setApplicationIdentity(Integer applicationIdentity) {
 		this.applicationIdentity = applicationIdentity;
 	}
-	public String getBankDivision() {
+	public Integer getBankDivision() {
 		return bankDivision;
 	}
-	public void setBankDivision(String bankDivision) {
+	public void setBankDivision(Integer bankDivision) {
 		this.bankDivision = bankDivision;
 	}
-	public String getProductFamily() {
+	public Integer getProductFamily() {
 		return productFamily;
 	}
-	public void setProductFamily(String productFamily) {
+	public void setProductFamily(Integer productFamily) {
 		this.productFamily = productFamily;
 	}
 	
@@ -101,28 +101,28 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	public void setTermFactor(Integer termFactor) {
 		this.termFactor = termFactor;
 	}
-	public Double getActualAir() {
+	public Integer getActualAir() {
 		return actualAir;
 	}
-	public void setActualAir(Double actualAir) {
+	public void setActualAir(Integer actualAir) {
 		this.actualAir = actualAir;
 	}
-	public Double getActualApr() {
+	public Integer getActualApr() {
 		return actualApr;
 	}
-	public void setActualApr(Double actualApr) {
+	public void setActualApr(Integer actualApr) {
 		this.actualApr = actualApr;
 	}
-	public Double getExpectetAir() {
+	public Integer getExpectetAir() {
 		return expectetAir;
 	}
-	public void setExpectetAir(Double expectetAir) {
+	public void setExpectetAir(Integer expectetAir) {
 		this.expectetAir = expectetAir;
 	}
-	public Double getExpectetApr() {
+	public Integer getExpectetApr() {
 		return expectetApr;
 	}
-	public void setExpectetApr(Double expectetApr) {
+	public void setExpectetApr(Integer expectetApr) {
 		this.expectetApr = expectetApr;
 	}
 	public Character getTestTransactionFlag() {
@@ -137,10 +137,11 @@ public class PricingTestCaseResponseEntity extends BaseEntity{
 	public void setXmlDifference(String xmlDifference) {
 		this.xmlDifference = xmlDifference;
 	}
-	public String getProductName() {
+	public Integer getProductName() {
 		return productName;
 	}
-	public void setProductName(String productName) {
+	public void setProductName(Integer productName) {
 		this.productName = productName;
 	}
 }
+
