@@ -7,9 +7,10 @@ public class PricingAttributeRequest {
 	private List<Integer> borrowingAmount;
 	private List<Integer> riskFactor;
 	private List<Integer> termFactor;
-	private String bankDivision;
-	private String productFamily;
-	private String productName;
+	private Integer bankDivision;
+	private Integer productFamily;
+	private Integer productName;
+	private Integer applicationIdentity;
 	private String userId;
 	
 	
@@ -29,39 +30,39 @@ public class PricingAttributeRequest {
 		this.termFactor = termFactor;
 	}
 
-	private String applicationIdentity;
-
-	public String getApplicationIdentity() {
-		return applicationIdentity;
-	}
-
-	public void setApplicationIdentity(String applicationIdentity) {
-		this.applicationIdentity = applicationIdentity;
-	}
-
-	public String getBankDivision() {
+	public Integer getBankDivision() {
 		return bankDivision;
 	}
 
-	public void setBankDivision(String bankDivision) {
+	public void setBankDivision(Integer bankDivision) {
 		this.bankDivision = bankDivision;
 	}
 
-	public String getProductFamily() {
+	public Integer getProductFamily() {
 		return productFamily;
 	}
 
-	public void setProductFamily(String productFamily) {
+	public void setProductFamily(Integer productFamily) {
 		this.productFamily = productFamily;
 	}
 
-	public String getProductName() {
+	public Integer getProductName() {
 		return productName;
 	}
 
-	public void setProductName(String productName) {
+	public void setProductName(Integer productName) {
 		this.productName = productName;
 	}
+
+	public Integer getApplicationIdentity() {
+		return applicationIdentity;
+	}
+
+	public void setApplicationIdentity(Integer applicationIdentity) {
+		this.applicationIdentity = applicationIdentity;
+	}
+
+	
 
 	public List<Integer> getBorrowingAmount() {
 		return borrowingAmount;
