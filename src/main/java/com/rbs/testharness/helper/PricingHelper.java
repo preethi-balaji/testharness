@@ -2,13 +2,22 @@ package com.rbs.testharness.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.rbs.testharness.entity.PricingBusinessAttributeEntity;
+import com.rbs.testharness.repository.PricingBusinessAttributeRepository;
 
 @Component
 public class PricingHelper {
 	
+	@Autowired
+	private PricingBusinessAttributeRepository parameterAttributeRepository;
 	/*
 	 * 
 	 */
@@ -38,5 +47,11 @@ public class PricingHelper {
 				}
 			}
 		}
+	}
+	
+	public Map<Integer,String> findBusinessAttributeDescription(){
+		List<PricingBusinessAttributeEntity> pricingBusinessAttributeEntityList=parameterAttributeRepository.findAll();
+		return pricingBusinessAttributeEntityList.stream().filter(Objects::nonNull)
+										         .collect(Collectors.toMap(PricingBusinessAttributeEntity::getAttributeId, PricingBusinessAttributeEntity::getRefDataDesc));
 	}
 }

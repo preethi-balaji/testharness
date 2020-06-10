@@ -2,6 +2,7 @@ package com.rbs.testharness.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import com.rbs.testharness.helper.PricingHelper;
 import com.rbs.testharness.model.PricingAttributeRequest;
 import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
+import com.rbs.testharness.model.PricingTestCaseResult;
 import com.rbs.testharness.repository.PricingBusinessAttributeRepository;
 import com.rbs.testharness.repository.PricingLookUpRepository;
 import com.rbs.testharness.repository.PricingTestCaseResponseRepository;
@@ -95,7 +97,7 @@ public class PricingService {
 		for (int i = 0; i < list4.size() / 3; i++) {
 			PricingTestCaseResponseEntity pricingTestCaseResponseEntity = new PricingTestCaseResponseEntity();
 			pricingTestCaseResponseEntity.setTestSetId(testSetEntity.getTestSetId());
-			String counter = String.format("%06d", transactionId++); 
+			String counter = String.format("%05d", transactionId++); 
 			pricingTestCaseResponseEntity.setTestTransactionNo("TH_"+testSetEntity.getTestSetId()+"_"+ counter);
 			pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_N);
 			pricingTestCaseResponseEntity.setApplicationIdentity(attributeInput.getApplicationIdentity());
@@ -109,36 +111,16 @@ public class PricingService {
 		}
 		//Saving to Transaction Testcase DB
 		pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.saveAll(pricingTestCaseResponseEntityList);
-		List<Integer> attributeIds=new ArrayList<>();	
-			attributeIds.add(attributeInput.getApplicationIdentity());	
-			attributeIds.add(attributeInput.getBankDivision());	
-			attributeIds.add(attributeInput.getProductName());	
-			attributeIds.add(attributeInput.getProductFamily());	
-				
-			List<PricingBusinessAttributeEntity> pricingBusinessAttributeList = parameterAttributeRepository.findByAttributeIdIn(attributeIds);
 		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
-		if(pricingTestCaseResponseEntityList!=null && pricingTestCaseResponseEntityList.size()>0) {
-			String appIdentity="";String bankDiv="";
-			String productName=""; String productFamily="";
-			for(PricingBusinessAttributeEntity s:pricingBusinessAttributeList) {
-				if(s.getRefDataKey().startsWith("AP")) {
-					appIdentity=s.getRefDataDesc();
-				}
-				else if(s.getRefDataKey().startsWith("BU")) {
-					bankDiv=s.getRefDataDesc();
-				}
-				else if(s.getRefDataKey().startsWith("PR")) {
-					productName=s.getRefDataDesc();}
-				else if(s.getRefDataKey().startsWith("PF")) {
-					productFamily=s.getRefDataDesc();}
-			}
-		for(PricingTestCaseResponseEntity resposeList:pricingTestCaseResponseEntityList) {
+		if(pricingTestCaseResponseEntityList!=null) {
+			Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+			for(PricingTestCaseResponseEntity resposeList:pricingTestCaseResponseEntityList) {
 				PricingTestCaseResponse testCase=new PricingTestCaseResponse();
 				BeanUtils.copyProperties(resposeList, testCase);
-				testCase.setApplicationIdentity(appIdentity);
-				testCase.setBankDivision(bankDiv);
-				testCase.setProductName(productName);
-				testCase.setProductFamily(productFamily);
+				testCase.setApplicationIdentity(businessAttributeMap.get(1));
+				testCase.setBankDivision(businessAttributeMap.get(2));
+				testCase.setProductName(businessAttributeMap.get(3));
+				testCase.setProductFamily(businessAttributeMap.get(4));
 				testCase.setTotalRecord((long) pricingTestCaseResponseEntityList.size());
 				pricingTestCaseResponseList.add(testCase);
 			}
@@ -220,13 +202,20 @@ public class PricingService {
 						pricingTestCaseResponseEntity.setExpectetApr(THConstant.Default_Apr);
 					}
 					pricingTestCaseResponseEntityList.add(pricingTestCaseResponseEntity);
+					//Saving one by one
+					pricingTestCaseResponseRepository.save(pricingTestCaseResponseEntity);
 				});
-				List<PricingTestCaseResponseEntity> pricingTestCaseResponseWithAirApr=pricingTestCaseResponseRepository.saveAll(pricingTestCaseResponseEntityList);
-				if(null!=pricingTestCaseResponseWithAirApr && pricingTestCaseResponseWithAirApr.size()>0) {
-					pricingTestCaseResponseWithAirApr.forEach(pricingTestCaseResponseAirApr->{
+				Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseWithAirApr=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+				if(null!=pricingTestCaseResponseWithAirApr && pricingTestCaseResponseWithAirApr.get().size()>0) {
+					Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+					pricingTestCaseResponseWithAirApr.get().forEach(pricingTestCaseResponseAirApr->{
 						PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
 						BeanUtils.copyProperties(pricingTestCaseResponseAirApr, pricingTestCaseResponse);
-						pricingTestCaseResponse.setTotalRecord(Long.valueOf(pricingTestCaseResponseWithAirApr.size()));
+						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
+						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
+						pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
+						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+						pricingTestCaseResponse.setTotalRecord(Long.valueOf(pricingTestCaseResponseWithAirApr.get().size()));
 						pricingTestCaseResponseList.add(pricingTestCaseResponse);
 					});
 				}
@@ -238,6 +227,65 @@ public class PricingService {
 	}
 	
 	/*
+	 * Final result based on the ODM interaction
+	 */
+	public PricingTestCaseResult generateTestCaseResult(Integer testSetId) {
+		PricingTestCaseResult pricingTestCaseResult=new PricingTestCaseResult();
+		List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntityList=new ArrayList<>();
+
+		if(null!=testSetId) {
+			Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseEntityLists=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+			if(pricingTestCaseResponseEntityLists.isPresent()) {
+				int testCasePassed=0;
+				int testCaseFailed=0;
+				for(PricingTestCaseResponseEntity pricingTestCaseResponses : pricingTestCaseResponseEntityLists.get()) {
+					PricingTestCaseResponseEntity pricingTestCaseResponseEntity=new PricingTestCaseResponseEntity();
+					BeanUtils.copyProperties(pricingTestCaseResponses, pricingTestCaseResponseEntity);
+					
+					//ODM Interaction Logic for Actual AIR & APR
+					
+					//Update the actual AIR & APR to DB based on the ODM response
+					pricingTestCaseResponseEntity.setActualAir(7.6);
+					pricingTestCaseResponseEntity.setActualApr(0.6);
+					
+					//Test Case passes /Failed logic by comparing expected for actual
+					testCasePassed++;
+					//Update testTransactionFlag 
+					//pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_Y);
+					pricingTestCaseResponseEntityList.add(pricingTestCaseResponseEntity);
+					//Saving one by one
+					pricingTestCaseResponseRepository.save(pricingTestCaseResponseEntity);
+				}
+				//Finally update to Transaction table
+				Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseWithAirApr=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+				List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
+				if(null!=pricingTestCaseResponseWithAirApr && pricingTestCaseResponseWithAirApr.get().size()>0) {
+					Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+					pricingTestCaseResponseWithAirApr.get().forEach(pricingTestCaseResults->{
+						PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
+						BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
+						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
+						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
+						pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
+						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+						pricingTestCaseResponseList.add(pricingTestCaseResponse);
+					});
+				}
+				//Setting the final result to ResultModel
+				
+				pricingTestCaseResult.setTestcasesResultList(pricingTestCaseResponseList);
+				pricingTestCaseResult.setPassed(testCasePassed);
+				pricingTestCaseResult.setFailed(testCaseFailed);
+				pricingTestCaseResult.setTotalTestCases(pricingTestCaseResponseList.size());
+			}else {
+				throw new THException(HttpStatus.NOT_FOUND,"Test Case not found","Not found");
+			}
+		}
+		return pricingTestCaseResult;
+	}
+		
+
+	/*
 	 * This method used for retrieving pagination Test cases pages by page
 	 */
 	
@@ -246,9 +294,14 @@ public class PricingService {
 		Page<PricingTestCaseResponseEntity> pageList= pricingTestCaseResponseRepository.findByTestSetId(testSetId,pageRequest);
 		List<PricingTestCaseResponse> testCaseList = new ArrayList<>();
 		if(pageList!=null && pageList.getSize()>0) {
+			Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
 			pageList.forEach(page->{
 				PricingTestCaseResponse testCase=new PricingTestCaseResponse();
 				BeanUtils.copyProperties(page, testCase);
+				testCase.setApplicationIdentity(businessAttributeMap.get(1));
+				testCase.setBankDivision(businessAttributeMap.get(2));
+				testCase.setProductName(businessAttributeMap.get(3));
+				testCase.setProductFamily(businessAttributeMap.get(4));
 				testCase.setTotalRecord(pageList.getTotalElements());
 				testCaseList.add(testCase);
 			});

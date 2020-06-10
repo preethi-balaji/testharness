@@ -16,6 +16,12 @@ CREATE TABLE THS_PRC_ATTRIBUTE_REF (
   
 );
 
+insert into THS_PRC_ATTRIBUTE_REF values(1,'01','Ulster','Y','','2008-11-11','','2008-11-11');
+insert into THS_PRC_ATTRIBUTE_REF values(2,'02','Business','Y','','2008-11-11','','2008-11-11');
+insert into THS_PRC_ATTRIBUTE_REF values(3,'03','Loans','Y','','2008-11-11','','2008-11-11');
+insert into THS_PRC_ATTRIBUTE_REF values(4,'04','small Business Loans','Y','','2008-11-11','','2008-11-11');
+
+
 CREATE TABLE THS_PRC_TESTSET_TB (
 
   TEST_SET_ID 		INTEGER  PRIMARY KEY,
@@ -75,5 +81,5 @@ CREATE TABLE THS_PRC_LOOKUP_REF (
   
 );
 insert into THS_PRC_LOOKUP_REF values(1,5,'>=12<=35','>=1000<5000',6,0,'','2008-11-11','','2008-11-11');
-insert into THS_PRC_LOOKUP_REF values(2,5,'>=12<=35','>=5000<10000',7,0,'','2008-11-11','','2008-11-11');
-insert into THS_PRC_LOOKUP_REF values(3,5,'>=12<=35','>=10000<15000',8,0,'','2008-11-11','','2008-11-11');
+insert into THS_PRC_LOOKUP_REF values(2,3,'>=12<=35','>=5000<10000',7,0,'','2008-11-11','','2008-11-11');
+insert into THS_PRC_LOOKUP_REF values(3,9,'>=12<=35','>=10000<15000',8,0,'','2008-11-11','','2008-11-11');

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rbs.testharness.model.PricingAttributeRequest;
 import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
+import com.rbs.testharness.model.PricingTestCaseResult;
 import com.rbs.testharness.service.PricingService;
 
 @RestController
@@ -37,7 +38,12 @@ public class PricingController {
 		return pricingService.generateTestCaseAirApr(testsetid);
 	}
 	
-	@RequestMapping(value="testdata/{testsetid}/pagination/pageno/{pageno}", method=RequestMethod.POST)
+	@RequestMapping(value="/testdata/result/{testsetid}", method=RequestMethod.GET)
+	private PricingTestCaseResult generateTestCaseResult(@PathVariable Integer testsetid) {
+		return pricingService.generateTestCaseResult(testsetid);
+	}
+	
+	@RequestMapping(value="testdata/{testsetid}/pagination/pageno/{pageno}", method=RequestMethod.GET)
 	private List<PricingTestCaseResponse> findTestCasesByPageNo(@PathVariable Integer testsetid,@PathVariable Integer pageno) {
 		return pricingService.findByPageNo(testsetid,pageno);
 	}
