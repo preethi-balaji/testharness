@@ -1,5 +1,6 @@
 package com.rbs.testharness.service;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.rbs.testharness.common.GeneratePdfReport;
 import com.rbs.testharness.common.THConstant;
 import com.rbs.testharness.common.THException;
 import com.rbs.testharness.entity.PricingBusinessAttributeEntity;
@@ -36,6 +38,9 @@ public class PricingService {
 	
 	@Autowired
 	private PricingHelper pricingHelper;
+	
+	@Autowired
+	GeneratePdfReport generatePdfReport;
 	
 	@Autowired
 	private PricingBusinessAttributeRepository parameterAttributeRepository;
@@ -248,10 +253,10 @@ public class PricingService {
 					pricingTestCaseResponseEntity.setActualAir(7.6);
 					pricingTestCaseResponseEntity.setActualApr(0.6);
 					
-					//Test Case passes /Failed logic by comparing expected for actual
+					
 					testCasePassed++;
 					//Update testTransactionFlag 
-					//pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_Y);
+					pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_Y);
 					pricingTestCaseResponseEntityList.add(pricingTestCaseResponseEntity);
 					//Saving one by one
 					pricingTestCaseResponseRepository.save(pricingTestCaseResponseEntity);
@@ -307,5 +312,29 @@ public class PricingService {
 			});
 		}
 		return testCaseList;
+	}
+	
+	
+	/*
+	 * Generate PDF
+	 */
+	
+	public ByteArrayInputStream generatePDF(Integer testSetId){
+		
+		Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
+		if(null!=pricingTestCaseResponseEntityList && pricingTestCaseResponseEntityList.get().size()>0) {
+			Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+			pricingTestCaseResponseEntityList.get().forEach(pricingTestCaseResults->{
+				PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
+				BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
+				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
+				pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
+				pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
+				pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+				pricingTestCaseResponseList.add(pricingTestCaseResponse);
+			});
+		}		
+		return generatePdfReport.testCaseResultReport(pricingTestCaseResponseList);
 	}
 }

@@ -1,8 +1,13 @@
 package com.rbs.testharness.controller;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +32,6 @@ public class PricingController {
 		return pricingService.businessAttributes();
 	}
 	
-	
 	@RequestMapping(value="/testdata", method=RequestMethod.POST)
 	private List<PricingTestCaseResponse> generateTestCaseCombination(@RequestBody PricingAttributeRequest attributeInputList) {
 		return pricingService.generateTestCaseCombination(attributeInputList);
@@ -47,4 +51,16 @@ public class PricingController {
 	private List<PricingTestCaseResponse> findTestCasesByPageNo(@PathVariable Integer testsetid,@PathVariable Integer pageno) {
 		return pricingService.findByPageNo(testsetid,pageno);
 	}
+	
+	@RequestMapping(value="testdata/generatepdf/{testsetid}", method=RequestMethod.GET , produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> citiesReport(@PathVariable Integer testsetid) {
+        ByteArrayInputStream bis = pricingService.generatePDF(testsetid);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=TestCaseResult.pdf");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
 }
