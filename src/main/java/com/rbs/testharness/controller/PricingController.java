@@ -53,7 +53,7 @@ public class PricingController {
 	}
 	
 	@RequestMapping(value="testdata/generatepdf/{testsetid}", method=RequestMethod.GET , produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> citiesReport(@PathVariable Integer testsetid) {
+    public ResponseEntity<InputStreamResource> testCasePDFReport(@PathVariable Integer testsetid) {
         ByteArrayInputStream bis = pricingService.generatePDF(testsetid);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=TestCaseResult.pdf");
@@ -63,4 +63,5 @@ public class PricingController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
     }
+	
 }

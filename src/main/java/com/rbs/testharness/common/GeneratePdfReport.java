@@ -24,7 +24,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.rbs.testharness.model.PricingTestCaseResponse;
-import com.rbs.testharness.model.PricingTestCaseResult;
 
 @Component
 public class GeneratePdfReport {
