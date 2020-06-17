@@ -26,7 +26,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.rbs.testharness.model.PricingTestCaseResponse;
 
 @Component
-public class GeneratePdfReport {
+public class GeneratePdfReport{
 
     private static final Logger logger = LoggerFactory.getLogger(GeneratePdfReport.class);
 

@@ -64,4 +64,14 @@ public class PricingController {
                 .body(new InputStreamResource(bis));
     }
 	
+	@RequestMapping(value="testdata/generateexcel/{testsetid}", method=RequestMethod.GET)
+    public ResponseEntity<InputStreamResource> testCaseExcelReport(@PathVariable Integer testsetid) {
+        ByteArrayInputStream resource = pricingService.generateExcel(testsetid);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=TestCaseResult.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers) // add headers if any
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(new InputStreamResource(resource));
+     }
 }

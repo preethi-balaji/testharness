@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.rbs.testharness.common.GenerateExcelReport;
 import com.rbs.testharness.common.GeneratePdfReport;
 import com.rbs.testharness.common.THConstant;
 import com.rbs.testharness.common.THException;
@@ -41,6 +42,9 @@ public class PricingService {
 	
 	@Autowired
 	GeneratePdfReport generatePdfReport;
+	
+	@Autowired
+	GenerateExcelReport generateExcelReport;
 	
 	@Autowired
 	private PricingBusinessAttributeRepository parameterAttributeRepository;
@@ -336,5 +340,24 @@ public class PricingService {
 			});
 		}		
 		return generatePdfReport.testCaseResultReport(pricingTestCaseResponseList);
+	}
+	
+public ByteArrayInputStream generateExcel(Integer testSetId){
+		
+		Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
+		if(null!=pricingTestCaseResponseEntityList && pricingTestCaseResponseEntityList.get().size()>0) {
+			Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+			pricingTestCaseResponseEntityList.get().forEach(pricingTestCaseResults->{
+				PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
+				BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
+				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
+				pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
+				pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
+				pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+				pricingTestCaseResponseList.add(pricingTestCaseResponse);
+			});
+		}		
+		return generateExcelReport.generateExcelReport(pricingTestCaseResponseList);
 	}
 }
