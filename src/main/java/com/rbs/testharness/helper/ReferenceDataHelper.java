@@ -58,7 +58,7 @@ public class ReferenceDataHelper {
                          columnName = THConstant.Term_Factor;
                          break;
                      case 2:
-                         columnName = THConstant.Borrowing_Amount+"|"+THConstant.Term_Margin_Premium;
+                         columnName = THConstant.Borrowing_Amount;
                          break;
                      case 3:
                          columnName = THConstant.Air_Rate+"|"+THConstant.Margin_Fee;
@@ -67,6 +67,9 @@ public class ReferenceDataHelper {
                          columnName = THConstant.Apr_Rate+"|"+THConstant.Arrangement_Fee;
                          break;
                      case 5:
+                         columnName = THConstant.Term_Margin_Premium;
+                         break;
+                     case 6:
                          columnName = THConstant.Start_Margin;
                          break;
                
@@ -87,12 +90,10 @@ public class ReferenceDataHelper {
                  else if((THConstant.Term_Factor).equalsIgnoreCase(columnName)) {
                 	 pricingLookUpEntity.setTermFactor(value);
                 }
-                 else if(sheetCol1!= null && sheetCol1.equalsIgnoreCase(THConstant.Borrowing_Amount) 
-                		 && (sheet.getSheetName().equalsIgnoreCase(THConstant.SBL_Sheet) 
-                				 || sheet.getSheetName().equalsIgnoreCase(THConstant.Overdraft_Sheet))) {
+                 else if((THConstant.Borrowing_Amount).equalsIgnoreCase(columnName)) {
                 	 pricingLookUpEntity.setBorrowingAmount(value);
                 }
-               
+                                
                  else if(sheetCol1!=null && sheetCol1.equalsIgnoreCase(THConstant.Air_Rate) 
                 		 && sheet.getSheetName().equalsIgnoreCase(THConstant.SBL_Sheet)) {
                 	 pricingLookUpEntity.setAirRate(Double.valueOf(value));
@@ -112,16 +113,19 @@ public class ReferenceDataHelper {
                 				 || sheet.getSheetName().equalsIgnoreCase(THConstant.Agri_Sheet))) {
                 	 pricingLookUpEntity.setArrangementFee(Double.valueOf(value));
                 }
-                 else if((THConstant.Start_Margin).equalsIgnoreCase(columnName) 
-                		 && sheet.getSheetName().equalsIgnoreCase(THConstant.Agri_Sheet)) {
-                	 pricingLookUpEntity.setStartMarginFee(Double.valueOf(value));
-                }
-                 else if(sheetCol2!=null && sheetCol2.equalsIgnoreCase(THConstant.Term_Margin_Premium) 
-                		 && sheet.getSheetName().equalsIgnoreCase(THConstant.Agri_Sheet)) {
+                 else if((THConstant.Term_Margin_Premium).equalsIgnoreCase(columnName)) {
                 	 pricingLookUpEntity.setTermMarginPremium(Double.valueOf(value));
                 }
-                 
-                 pricingLookUpEntity.setAttributeId(businessAttributeMap.get(sheet.getSheetName()));
+                 else if((THConstant.Start_Margin).equalsIgnoreCase(columnName)) {
+                	 pricingLookUpEntity.setStartMarginFee(Double.valueOf(value));
+                }
+                 if(sheet.getSheetName().equalsIgnoreCase(THConstant.SBL_Sheet)) {
+                	 pricingLookUpEntity.setAttributeId(1);
+                 }
+                 else {
+                	 pricingLookUpEntity.setAttributeId(businessAttributeMap.get(sheet.getSheetName()));
+                 }
+                
                  boolean valid =true;
                  if (valid) {
                      continue;
