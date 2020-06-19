@@ -54,4 +54,10 @@ public class PricingHelper {
 		return pricingBusinessAttributeEntityList.stream().filter(Objects::nonNull)
 										         .collect(Collectors.toMap(PricingBusinessAttributeEntity::getAttributeId, PricingBusinessAttributeEntity::getRefDataDesc));
 	}
+	
+	public Map<String,Integer> findBusinessAttributeId(){
+		List<PricingBusinessAttributeEntity> pricingBusinessAttributeEntityList=parameterAttributeRepository.findAll();
+		return pricingBusinessAttributeEntityList.stream().filter(Objects::nonNull).filter(s-> s.getRefDataKey().startsWith("PR"))
+										         .collect(Collectors.toMap(PricingBusinessAttributeEntity::getRefDataDesc, PricingBusinessAttributeEntity::getAttributeId));
+	}
 }
