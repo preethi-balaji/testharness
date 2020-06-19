@@ -22,4 +22,16 @@ public interface THConstant {
 	public static final String BorrowingAmount_Range_45000to50000=">=45000<50000";
 	public static final Double Default_Air=6.59;
 	public static final Double Default_Apr=0.0;
+	public static final String Risk_Band="Risk Band";
+	public static final String Term_Factor="Term Factor";
+	public static final String Borrowing_Amount="Borrowing Amount";
+	public static final String Term_Margin_Premium="Term Margin Premimum";
+	public static final String Margin_Fee="Margin Fee";
+	public static final String Air_Rate="AIR Rate";
+	public static final String Apr_Rate="APR Rate";
+	public static final String Arrangement_Fee="Arrangement Fee";
+	public static final String Start_Margin="Start Margin";
+	public static final String SBL_Sheet="Small Business Loans";
+	public static final String Overdraft_Sheet="Overdraft";
+	public static final String Agri_Sheet="Agri";
 }

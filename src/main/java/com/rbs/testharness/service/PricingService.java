@@ -1,12 +1,15 @@
 package com.rbs.testharness.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.rbs.testharness.common.GenerateExcelReport;
 import com.rbs.testharness.common.GeneratePdfReport;
@@ -25,6 +29,7 @@ import com.rbs.testharness.entity.PricingLookUpEntity;
 import com.rbs.testharness.entity.PricingTestCaseResponseEntity;
 import com.rbs.testharness.entity.PricingTestSetEntity;
 import com.rbs.testharness.helper.PricingHelper;
+import com.rbs.testharness.helper.ReferenceDataHelper;
 import com.rbs.testharness.model.PricingAttributeRequest;
 import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
@@ -41,13 +46,10 @@ public class PricingService {
 	private PricingHelper pricingHelper;
 	
 	@Autowired
-	GeneratePdfReport generatePdfReport;
+	private ReferenceDataHelper referenceDataHelper;
 	
 	@Autowired
-	GenerateExcelReport generateExcelReport;
-	
-	@Autowired
-	private PricingBusinessAttributeRepository parameterAttributeRepository;
+	PricingBusinessAttributeRepository parameterAttributeRepository;
 	
 	@Autowired
 	PricingTestSetRepository pricingTestSetRepository;
@@ -57,6 +59,12 @@ public class PricingService {
 	
 	@Autowired
 	PricingLookUpRepository pricingLookUpRepository;
+	
+	@Autowired
+	GeneratePdfReport generatePdfReport;
+	
+	@Autowired
+	GenerateExcelReport generateExcelReport;
 	
 	/*
 	 * 
@@ -121,15 +129,15 @@ public class PricingService {
 		//Saving to Transaction Testcase DB
 		pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.saveAll(pricingTestCaseResponseEntityList);
 		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
-		if(pricingTestCaseResponseEntityList!=null) {
+		if(pricingTestCaseResponseEntityList!=null && !pricingTestCaseResponseEntityList.isEmpty()) {
 			Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
 			for(PricingTestCaseResponseEntity resposeList:pricingTestCaseResponseEntityList) {
 				PricingTestCaseResponse testCase=new PricingTestCaseResponse();
 				BeanUtils.copyProperties(resposeList, testCase);
-				testCase.setApplicationIdentity(businessAttributeMap.get(1));
-				testCase.setBankDivision(businessAttributeMap.get(2));
-				testCase.setProductName(businessAttributeMap.get(3));
-				testCase.setProductFamily(businessAttributeMap.get(4));
+				testCase.setApplicationIdentity(businessAttributeMap.get(resposeList.getApplicationIdentity()));
+				testCase.setBankDivision(businessAttributeMap.get(resposeList.getBankDivision()));
+				testCase.setProductName(businessAttributeMap.get(resposeList.getProductName()));
+				testCase.setProductFamily(businessAttributeMap.get(resposeList.getProductFamily()));
 				testCase.setTotalRecord((long) pricingTestCaseResponseEntityList.size());
 				pricingTestCaseResponseList.add(testCase);
 			}
@@ -220,10 +228,10 @@ public class PricingService {
 					pricingTestCaseResponseWithAirApr.get().forEach(pricingTestCaseResponseAirApr->{
 						PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
 						BeanUtils.copyProperties(pricingTestCaseResponseAirApr, pricingTestCaseResponse);
-						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
-						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
-						pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
-						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResponseAirApr.getApplicationIdentity()));
+						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResponseAirApr.getBankDivision()));
+						pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResponseAirApr.getProductName()));
+						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResponseAirApr.getProductFamily()));
 						pricingTestCaseResponse.setTotalRecord(Long.valueOf(pricingTestCaseResponseWithAirApr.get().size()));
 						pricingTestCaseResponseList.add(pricingTestCaseResponse);
 					});
@@ -257,10 +265,10 @@ public class PricingService {
 					pricingTestCaseResponseEntity.setActualAir(7.6);
 					pricingTestCaseResponseEntity.setActualApr(0.6);
 					
-					
+					//Test Case passes /Failed logic by comparing expected for actual
 					testCasePassed++;
 					//Update testTransactionFlag 
-					pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_Y);
+					//pricingTestCaseResponseEntity.setTestTransactionFlag(THConstant.TestCase_Processed_Y);
 					pricingTestCaseResponseEntityList.add(pricingTestCaseResponseEntity);
 					//Saving one by one
 					pricingTestCaseResponseRepository.save(pricingTestCaseResponseEntity);
@@ -273,10 +281,10 @@ public class PricingService {
 					pricingTestCaseResponseWithAirApr.get().forEach(pricingTestCaseResults->{
 						PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
 						BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
-						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
-						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
-						pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
-						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+						pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResults.getApplicationIdentity()));
+						pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResults.getBankDivision()));
+						pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResults.getProductName()));
+						pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResults.getProductFamily()));
 						pricingTestCaseResponseList.add(pricingTestCaseResponse);
 					});
 				}
@@ -307,18 +315,16 @@ public class PricingService {
 			pageList.forEach(page->{
 				PricingTestCaseResponse testCase=new PricingTestCaseResponse();
 				BeanUtils.copyProperties(page, testCase);
-				testCase.setApplicationIdentity(businessAttributeMap.get(1));
-				testCase.setBankDivision(businessAttributeMap.get(2));
-				testCase.setProductName(businessAttributeMap.get(3));
-				testCase.setProductFamily(businessAttributeMap.get(4));
+				testCase.setApplicationIdentity(businessAttributeMap.get(page.getApplicationIdentity()));
+				testCase.setBankDivision(businessAttributeMap.get(page.getBankDivision()));
+				testCase.setProductName(businessAttributeMap.get(page.getProductName()));
+				testCase.setProductFamily(businessAttributeMap.get(page.getProductFamily()));
 				testCase.setTotalRecord(pageList.getTotalElements());
 				testCaseList.add(testCase);
 			});
 		}
 		return testCaseList;
 	}
-	
-	
 	/*
 	 * Generate PDF
 	 */
@@ -332,17 +338,17 @@ public class PricingService {
 			pricingTestCaseResponseEntityList.get().forEach(pricingTestCaseResults->{
 				PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
 				BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
-				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(1));
-				pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(2));
-				pricingTestCaseResponse.setProductName(businessAttributeMap.get(3));
-				pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(4));
+				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResults.getApplicationIdentity()));
+				pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResults.getBankDivision()));
+				pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResults.getProductName()));
+				pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResults.getProductFamily()));
 				pricingTestCaseResponseList.add(pricingTestCaseResponse);
 			});
 		}		
 		return generatePdfReport.testCaseResultReport(pricingTestCaseResponseList);
 	}
 	
-public ByteArrayInputStream generateExcel(Integer testSetId){
+ public ByteArrayInputStream generateExcel(Integer testSetId){
 		
 		Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
 		List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
@@ -360,4 +366,23 @@ public ByteArrayInputStream generateExcel(Integer testSetId){
 		}		
 		return generateExcelReport.generateExcelReport(pricingTestCaseResponseList);
 	}
+ 
+ //Adding Reference Data to LookUp
+ public HttpStatus generateReferenceData(MultipartFile uploadfile)  {
+	 File convFile = new File( uploadfile.getOriginalFilename());
+	 List<PricingLookUpEntity> pricingLookUpEntityList  =new ArrayList<PricingLookUpEntity>();
+	 try {
+		 uploadfile.transferTo(convFile);
+		pricingLookUpEntityList = referenceDataHelper.generateReferenceData(convFile);
+	} catch (IllegalStateException |InvalidFormatException | IOException|NumberFormatException e) {
+		 throw new THException(HttpStatus.EXPECTATION_FAILED,"Unable to read the uploaded file due to Invalid Input","Exception Occured");
+	}
+	 if(pricingLookUpEntityList!=null && !pricingLookUpEntityList.isEmpty()) {
+		 pricingLookUpRepository.saveAll(pricingLookUpEntityList);
+	 }
+	 else {
+		 throw new THException(HttpStatus.NOT_MODIFIED,"Unable to Save Uploaded Reference Data","Not Modified");
+	 }
+	 return HttpStatus.OK;
+ }
 }
