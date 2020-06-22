@@ -11,7 +11,8 @@ import com.rbs.testharness.entity.PricingTestSetEntity;
 @Repository
 public interface PricingTestSetRepository extends JpaRepository<PricingTestSetEntity, Integer>{
 	
-	//Method to get all test sets for the given dates and the environment
-	List<PricingTestSetEntity> findByCreatedTsBetweenAndEnvironment(LocalDateTime startDate, LocalDateTime endDate, String environment);
+	//Method to get all test sets for the given dates, env, product name and processed flag
+	List<PricingTestSetEntity> findByCreatedTsBetweenAndEnvironmentAndProductNameAndProcessedFlag
+		(LocalDateTime startDate, LocalDateTime endDate, String environment, int prodName, char processedFlag);
 
 }

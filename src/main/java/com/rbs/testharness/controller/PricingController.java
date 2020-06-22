@@ -93,10 +93,10 @@ public class PricingController {
 		
 	}
 	
-	@GetMapping(value="/testsets/{fromdate}/{todate}/{env}")
+	@GetMapping(value="/testsets/{fromdate}/{todate}/{env}/{productname}")
 	private List<PricingTestSet> getTestSets(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromdate,
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate todate, @PathVariable String env) {
-		return pricingService.fetchTestSetDetails(fromdate, todate,env);
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate todate, @PathVariable String env, @PathVariable int productname) {
+		return pricingService.fetchTestSetDetails(fromdate, todate,env, productname);
 		
 	}
 	

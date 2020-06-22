@@ -394,10 +394,12 @@ public class PricingService {
 	 * @param toDate
 	 * @return pricingTestSets
 	 */
-	public List<PricingTestSet> fetchTestSetDetails (LocalDate fromDate, LocalDate toDate, String environment) {		
+	public List<PricingTestSet> fetchTestSetDetails (LocalDate fromDate, LocalDate toDate, String environment, int prodName) {		
 		List<PricingTestSet> pricingTestSets = new ArrayList<> ();
-		List<PricingTestSetEntity> pricingTestSetEntities = pricingTestSetRepository.findByCreatedTsBetweenAndEnvironment(
-					fromDate.atStartOfDay(),toDate.atStartOfDay(), environment);
+		//productName,processedFlag
+		List<PricingTestSetEntity> pricingTestSetEntities = pricingTestSetRepository.
+			findByCreatedTsBetweenAndEnvironmentAndProductNameAndProcessedFlag(
+					fromDate.atStartOfDay(),toDate.atStartOfDay(), environment, prodName, THConstant.TestCase_Processed_Y);
 		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
 		if (pricingTestSetEntities != null && !pricingTestSetEntities.isEmpty()) {
 			
@@ -428,8 +430,7 @@ public class PricingService {
 	public List<PricingTestCaseResponse> fetchTestTransactionDetails (int testSetId) {
 		List<PricingTestCaseResponse> pricingTestCaseResponses = new ArrayList <>();
 		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
-		List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntities = pricingTestCaseResponseRepository.
-				findByTestSetIdAndTestTransactionFlag(testSetId, THConstant.Test_Transaction_Flag);
+		List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntities = pricingTestCaseResponseRepository.findByTestSetId(testSetId);
 		
 		if (pricingTestCaseResponseEntities != null && !pricingTestCaseResponseEntities.isEmpty()){
 			
