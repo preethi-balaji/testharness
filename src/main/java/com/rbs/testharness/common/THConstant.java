@@ -34,4 +34,5 @@ public interface THConstant {
 	public static final String SBL_Sheet="Small Business Loans";
 	public static final String Overdraft_Sheet="Overdraft";
 	public static final String Agri_Sheet="Agri";
+	public static final char Test_Transaction_Flag = 'Y';
 }

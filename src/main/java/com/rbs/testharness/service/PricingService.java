@@ -3,6 +3,7 @@ package com.rbs.testharness.service;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.rbs.testharness.model.PricingAttributeRequest;
 import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
 import com.rbs.testharness.model.PricingTestCaseResult;
+import com.rbs.testharness.model.PricingTestSet;
 import com.rbs.testharness.repository.PricingBusinessAttributeRepository;
 import com.rbs.testharness.repository.PricingLookUpRepository;
 import com.rbs.testharness.repository.PricingTestCaseResponseRepository;
@@ -385,4 +387,68 @@ public class PricingService {
 	 }
 	 return HttpStatus.OK;
  }
+ 
+ /**
+	 * Method to fetch all sets details for the given dates and environment
+	 * @param fromDate
+	 * @param toDate
+	 * @return pricingTestSets
+	 */
+	public List<PricingTestSet> fetchTestSetDetails (LocalDate fromDate, LocalDate toDate, String environment) {		
+		List<PricingTestSet> pricingTestSets = new ArrayList<> ();
+		List<PricingTestSetEntity> pricingTestSetEntities = pricingTestSetRepository.findByCreatedTsBetweenAndEnvironment(
+					fromDate.atStartOfDay(),toDate.atStartOfDay(), environment);
+		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+		if (pricingTestSetEntities != null && !pricingTestSetEntities.isEmpty()) {
+			
+			for (PricingTestSetEntity pricingTestSetEntity : pricingTestSetEntities) {
+				
+				PricingTestSet pricingTestSet = new PricingTestSet();
+				BeanUtils.copyProperties(pricingTestSetEntity, pricingTestSet);
+				pricingTestSet.setApplicationIdentity(businessAttributeMap.get(pricingTestSetEntity.getApplicationIdentity()));
+				pricingTestSet.setBankDivision(businessAttributeMap.get(pricingTestSetEntity.getBankDivision()));
+				pricingTestSet.setProductName(businessAttributeMap.get(pricingTestSetEntity.getProductName()));
+				pricingTestSet.setProductFamily(businessAttributeMap.get(pricingTestSetEntity.getProductFamily()));
+				pricingTestSets.add(pricingTestSet);
+			}		
+			
+		} else {
+			throw new THException(HttpStatus.NOT_FOUND,"Test Sets not found","Not found");
+		}
+		
+		return pricingTestSets;	
+		
+	}
+	
+	/**
+	 * Method to fetch all test transaction details for the given test set id
+	 * @param testSetId
+	 * @return
+	 */
+	public List<PricingTestCaseResponse> fetchTestTransactionDetails (int testSetId) {
+		List<PricingTestCaseResponse> pricingTestCaseResponses = new ArrayList <>();
+		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+		List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntities = pricingTestCaseResponseRepository.
+				findByTestSetIdAndTestTransactionFlag(testSetId, THConstant.Test_Transaction_Flag);
+		
+		if (pricingTestCaseResponseEntities != null && !pricingTestCaseResponseEntities.isEmpty()){
+			
+			for (PricingTestCaseResponseEntity pricingTestCaseResponseEntity : pricingTestCaseResponseEntities) {
+				
+				PricingTestCaseResponse pricingTestCaseResponse = new PricingTestCaseResponse();
+				BeanUtils.copyProperties(pricingTestCaseResponseEntity, pricingTestCaseResponse);
+				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResponseEntity.getApplicationIdentity()));
+				pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResponseEntity.getBankDivision()));
+				pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResponseEntity.getProductName()));
+				pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResponseEntity.getProductFamily()));
+				pricingTestCaseResponse.setTotalRecord((long)pricingTestCaseResponseEntities.size());
+				pricingTestCaseResponses.add(pricingTestCaseResponse);				
+			}
+			
+		} else {
+			throw new THException(HttpStatus.NOT_FOUND,"Test Transaction not found","Not found");
+		}
+		return pricingTestCaseResponses;
+	}
+
 }

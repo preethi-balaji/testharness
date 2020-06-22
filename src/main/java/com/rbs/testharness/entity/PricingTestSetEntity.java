@@ -1,5 +1,7 @@
 package com.rbs.testharness.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +33,14 @@ public class PricingTestSetEntity extends BaseEntity{
 	private String termFactor;
 	@Column(name = "PROCESSED_FLAG")
 	private Character processedFlag;
+	
+	@Column(name = "CREATED_BY")
+	private String createdBy;
+	@Column(name = "CREATED_TS")
+	private LocalDateTime createdTs;
+		
+	@Column(name = "ENVIRONMENT")
+	private String environment;
 	
 	public Integer getTestSetId() {
 		return testSetId;
@@ -87,6 +97,24 @@ public class PricingTestSetEntity extends BaseEntity{
 	}
 	public void setBorrowingAmount(String borrowingAmount) {
 		this.borrowingAmount = borrowingAmount;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public LocalDateTime getCreatedTs() {
+		return createdTs;
+	}
+	public void setCreatedTs(LocalDateTime createdTs) {
+		this.createdTs = createdTs;
+	}
+	public String getEnvironment() {
+		return environment;
+	}
+	public void setEnvironment(String environment) {
+		this.environment = environment;
 	}
 }
 

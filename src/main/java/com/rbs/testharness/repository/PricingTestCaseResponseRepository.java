@@ -16,5 +16,8 @@ public interface PricingTestCaseResponseRepository  extends JpaRepository<Pricin
 	
 	Optional<List<PricingTestCaseResponseEntity>> findByTestSetId(Integer testSetId);
 	Page<PricingTestCaseResponseEntity> findByTestSetId(Integer testSetId,Pageable pageRequest);
+	
+	//Method to get all test set transactions for the given test set id and the transaction flag
+	List<PricingTestCaseResponseEntity> findByTestSetIdAndTestTransactionFlag(int testSetId, char transactionFlag);
 
 }

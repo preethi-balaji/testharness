@@ -2,15 +2,18 @@ package com.rbs.testharness.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +27,7 @@ import com.rbs.testharness.model.PricingAttributeRequest;
 import com.rbs.testharness.model.PricingBusinessAttribute;
 import com.rbs.testharness.model.PricingTestCaseResponse;
 import com.rbs.testharness.model.PricingTestCaseResult;
+import com.rbs.testharness.model.PricingTestSet;
 import com.rbs.testharness.service.PricingService;
 
 @RestController
@@ -87,5 +91,17 @@ public class PricingController {
 		 
 		 return ResponseEntity.ok(pricingService.generateReferenceData(uploadfile));
 		
+	}
+	
+	@GetMapping(value="/testsets/{fromdate}/{todate}/{env}")
+	private List<PricingTestSet> getTestSets(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromdate,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate todate, @PathVariable String env) {
+		return pricingService.fetchTestSetDetails(fromdate, todate,env);
+		
+	}
+	
+	@GetMapping("/testdata/{testsetid}")
+	public List<PricingTestCaseResponse> getTestTransations (@PathVariable int testsetid) {		
+		return pricingService.fetchTestTransactionDetails(testsetid);
 	}
 }

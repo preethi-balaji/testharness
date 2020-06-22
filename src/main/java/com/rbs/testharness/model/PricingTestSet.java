@@ -1,5 +1,7 @@
 package com.rbs.testharness.model;
 
+import java.time.LocalDateTime;
+
 public class PricingTestSet {
 	
 	private Integer testSetId;
@@ -8,9 +10,11 @@ public class PricingTestSet {
 	private String productFamily;
 	private String productName;
 	private String riskBand;
-	private String borrowingAmt;
+	private String borrowingAmount;
 	private String termFactor;
 	private Character processedFlag;
+	private String createdBy;	
+	private LocalDateTime createdTs;
 	
 	public Integer getTestSetId() {
 		return testSetId;
@@ -30,11 +34,12 @@ public class PricingTestSet {
 	public void setRiskBand(String riskBand) {
 		this.riskBand = riskBand;
 	}
-	public String getBorrowingAmt() {
-		return borrowingAmt;
+	
+	public String getBorrowingAmount() {
+		return borrowingAmount;
 	}
-	public void setBorrowingAmt(String borrowingAmt) {
-		this.borrowingAmt = borrowingAmt;
+	public void setBorrowingAmount(String borrowingAmount) {
+		this.borrowingAmount = borrowingAmount;
 	}
 	public Character getProcessedFlag() {
 		return processedFlag;
@@ -65,5 +70,17 @@ public class PricingTestSet {
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public LocalDateTime getCreatedTs() {
+		return createdTs;
+	}
+	public void setCreatedTs(LocalDateTime createdTs) {
+		this.createdTs = createdTs;
 	}
 }
