@@ -427,15 +427,21 @@ public class PricingService {
 	 * @param testSetId
 	 * @return
 	 */
-	public List<PricingTestCaseResponse> fetchTestTransactionDetails (int testSetId) {
+	public PricingTestCaseResult fetchTestTransactionDetails (int testSetId) {
 		List<PricingTestCaseResponse> pricingTestCaseResponses = new ArrayList <>();
+		PricingTestCaseResult pricingTestCaseResult=new PricingTestCaseResult();
 		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
 		List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntities = pricingTestCaseResponseRepository.findByTestSetId(testSetId);
-		
+		int passedCount = 0, failedCount = 0;
 		if (pricingTestCaseResponseEntities != null && !pricingTestCaseResponseEntities.isEmpty()){
 			
 			for (PricingTestCaseResponseEntity pricingTestCaseResponseEntity : pricingTestCaseResponseEntities) {
 				
+				if (pricingTestCaseResponseEntity.getTestTransactionFlag().equals('Y')) {
+					passedCount++;
+				} else {
+					failedCount++;
+				}
 				PricingTestCaseResponse pricingTestCaseResponse = new PricingTestCaseResponse();
 				BeanUtils.copyProperties(pricingTestCaseResponseEntity, pricingTestCaseResponse);
 				pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResponseEntity.getApplicationIdentity()));
@@ -446,10 +452,15 @@ public class PricingService {
 				pricingTestCaseResponses.add(pricingTestCaseResponse);				
 			}
 			
+			pricingTestCaseResult.setTestcasesResultList(pricingTestCaseResponses);
+			pricingTestCaseResult.setPassed(passedCount);
+			pricingTestCaseResult.setFailed(failedCount);
+			pricingTestCaseResult.setTotalTestCases(pricingTestCaseResponses.size());
+			
 		} else {
 			throw new THException(HttpStatus.NOT_FOUND,"Test Transaction not found","Not found");
 		}
-		return pricingTestCaseResponses;
+		return pricingTestCaseResult;
 	}
 
 }

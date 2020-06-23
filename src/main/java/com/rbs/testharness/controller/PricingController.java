@@ -101,7 +101,7 @@ public class PricingController {
 	}
 	
 	@GetMapping("/testdata/{testsetid}")
-	public List<PricingTestCaseResponse> getTestTransations (@PathVariable int testsetid) {		
+	public PricingTestCaseResult getTestTransations (@PathVariable int testsetid) {		
 		return pricingService.fetchTestTransactionDetails(testsetid);
 	}
 }
