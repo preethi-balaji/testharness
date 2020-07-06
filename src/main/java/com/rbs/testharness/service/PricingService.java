@@ -40,6 +40,8 @@ import com.rbs.testharness.repository.PricingBusinessAttributeRepository;
 import com.rbs.testharness.repository.PricingLookUpRepository;
 import com.rbs.testharness.repository.PricingTestCaseResponseRepository;
 import com.rbs.testharness.repository.PricingTestSetRepository;
+import com.rbs.testharness.helper.TestScenarioHelper;
+import com.rbs.testharness.common.GenerateTestScenarioExcel;
 
 @Service
 public class PricingService {
@@ -67,6 +69,12 @@ public class PricingService {
 	
 	@Autowired
 	GenerateExcelReport generateExcelReport;
+	
+	@Autowired
+	GenerateTestScenarioExcel generateTestScenarioExcel;
+	
+	@Autowired
+	private TestScenarioHelper testScenarioHelper;
 	
 	/*
 	 * 
