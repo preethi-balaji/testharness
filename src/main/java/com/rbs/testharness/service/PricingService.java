@@ -462,5 +462,81 @@ public class PricingService {
 		}
 		return pricingTestCaseResult;
 	}
+	//Generating Test Scenarios report in Excel
+public ByteArrayInputStream generateTestCaseScenarioExcel(Integer testSetId) {
+	Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseEntityList=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+	Optional<PricingTestSetEntity>  testSetRepo = pricingTestSetRepository.findById(testSetId);
+	List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
+	if(null!=pricingTestCaseResponseEntityList && pricingTestCaseResponseEntityList.get().size()>0) {
+		Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+		pricingTestCaseResponseEntityList.get().forEach(pricingTestCaseResults->{
+			PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
+			BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
+			pricingTestCaseResponse.setEnvironment(testSetRepo.get().getEnvrionment());
+			pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResults.getApplicationIdentity()));
+			pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResults.getBankDivision()));
+			pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResults.getProductName()));
+			pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResults.getProductFamily()));
+			pricingTestCaseResponseList.add(pricingTestCaseResponse);
+		});
+	}		
+	return generateTestScenarioExcel.generateExcelReport(pricingTestCaseResponseList);
+}
+
+//Adding Selected Test Cases
+public PricingTestCaseResult selectedTestCaseExecution(MultipartFile uploadfile)  {
+	PricingTestCaseResult pricingTestCaseResult=new PricingTestCaseResult();
+	 List<PricingTestCaseResponseEntity> pricingTestCaseResponseEntityList  =new ArrayList<PricingTestCaseResponseEntity>();
+	 try {
+		
+		 pricingTestCaseResponseEntityList = testScenarioHelper.generateSelectedTestCase(uploadfile);
+	} catch (IllegalStateException |InvalidFormatException | IOException|NumberFormatException e) {
+		 e.printStackTrace();
+		 throw new THException(HttpStatus.EXPECTATION_FAILED,"Unable to read the uploaded file due to Invalid Input","Exception Occured");
+	}
+	 if(pricingTestCaseResponseEntityList!=null && !pricingTestCaseResponseEntityList.isEmpty()) {
+			int testSetId=pricingTestCaseResponseEntityList.get(0).getTestSetId();
+			long deleteRec=pricingTestCaseResponseRepository.deleteByTestSetId(testSetId);
+			List<Integer> borrowingAmt= pricingTestCaseResponseRepository.findDistinctBorrowingAmtByTestSetId(testSetId);
+			String borrowingAmount = borrowingAmt.stream().map(String::valueOf).collect(Collectors.joining(","));
+		 pricingTestCaseResponseEntityList =  pricingTestCaseResponseRepository.saveAll(pricingTestCaseResponseEntityList);
+		 System.out.println("size::"+pricingTestCaseResponseEntityList.size()+"Deleted records::"+deleteRec+"BorrowingAmout::"+borrowingAmount);
+		 	int testCasePassed=0;
+			int testCaseFailed=0;
+			
+			pricingTestCaseResponseEntityList.forEach(pricingTestCaseResponses->{
+				PricingTestCaseResponseEntity pricingTestCaseResponseEntity=new PricingTestCaseResponseEntity();
+				BeanUtils.copyProperties(pricingTestCaseResponses, pricingTestCaseResponseEntity);
+				
+			
+				pricingTestCaseResponseRepository.save(pricingTestCaseResponseEntity);
+			});
+			//Finally update to Transaction table
+			Optional<List<PricingTestCaseResponseEntity>> pricingTestCaseResponseWithAirApr=pricingTestCaseResponseRepository.findByTestSetId(testSetId);
+			List<PricingTestCaseResponse> pricingTestCaseResponseList=new ArrayList<>();
+			if(null!=pricingTestCaseResponseWithAirApr && pricingTestCaseResponseWithAirApr.get().size()>0) {
+				Map<Integer, String> businessAttributeMap = pricingHelper.findBusinessAttributeDescription();
+				pricingTestCaseResponseWithAirApr.get().forEach(pricingTestCaseResults->{
+					PricingTestCaseResponse pricingTestCaseResponse=new PricingTestCaseResponse();
+					BeanUtils.copyProperties(pricingTestCaseResults, pricingTestCaseResponse);
+					pricingTestCaseResponse.setApplicationIdentity(businessAttributeMap.get(pricingTestCaseResults.getApplicationIdentity()));
+					pricingTestCaseResponse.setBankDivision(businessAttributeMap.get(pricingTestCaseResults.getBankDivision()));
+					pricingTestCaseResponse.setProductName(businessAttributeMap.get(pricingTestCaseResults.getProductName()));
+					pricingTestCaseResponse.setProductFamily(businessAttributeMap.get(pricingTestCaseResults.getProductFamily()));
+					pricingTestCaseResponseList.add(pricingTestCaseResponse);
+				});
+			}
+			//Setting the final result to ResultModel
+			
+			pricingTestCaseResult.setTestcasesResultList(pricingTestCaseResponseList);
+			pricingTestCaseResult.setPassed(testCasePassed);
+			pricingTestCaseResult.setFailed(testCaseFailed);
+			pricingTestCaseResult.setTotalTestCases(pricingTestCaseResponseList.size());
+	 }
+	 else {
+		 throw new THException(HttpStatus.NOT_MODIFIED,"Unable to Save Uploaded Reference Data","Not Modified");
+	 }
+	 return pricingTestCaseResult;
+}
 
 }
