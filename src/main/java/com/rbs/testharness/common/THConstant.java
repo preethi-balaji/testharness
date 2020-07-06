@@ -34,4 +34,18 @@ public interface THConstant {
 	public static final String SBL_Sheet="Small Business Loans";
 	public static final String Overdraft_Sheet="Overdraft";
 	public static final String Agri_Sheet="Agri";	
+	//Process Selected Test case constants
+	public static final String Test_Case_Number="Test Case Number";
+	public static final String Test_Set_Id="Test Set Id";
+	public static final String Application_Identity="Application Identity";
+	public static final String Bank_Division="Bank Division";
+	public static final String Product_Family="Product Family";
+	public static final String Product_Name="Product Name";
+	public static final String Term="Term(Months)";
+	public static final String Expected_AIR="Expected AIR";
+	public static final String Expected_APR="Excepted APR";
+	public static final String Expected_Margin_Fee="Expected Margin Fee";
+	public static final String Expected_Arrangement_Fee="Expected Arrangement Fee";
+	public static final String Environment="Environment";
+	public static final String Created_By="Created By";
 }
