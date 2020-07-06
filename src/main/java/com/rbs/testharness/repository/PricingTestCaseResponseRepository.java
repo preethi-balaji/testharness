@@ -19,5 +19,8 @@ public interface PricingTestCaseResponseRepository  extends JpaRepository<Pricin
 	
 	//Method to get all test set transactions for the given test set id and the transaction flag
 	List<PricingTestCaseResponseEntity> findByTestSetId(int testSetId);
+	
+	long deleteByTestSetId(Integer testSetId);
+	List<Integer> findDistinctBorrowingAmtByTestSetId(Integer testSetId);
 
 }
