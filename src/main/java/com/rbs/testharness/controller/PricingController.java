@@ -104,4 +104,21 @@ public class PricingController {
 	public PricingTestCaseResult getTestTransations (@PathVariable int testsetid) {		
 		return pricingService.fetchTestTransactionDetails(testsetid);
 	}
+	@GetMapping(value="testdata/generatescenarioexcel/{testsetid}")
+    public ResponseEntity<InputStreamResource> generateTestCaseExcelReport(@PathVariable Integer testsetid) {
+        ByteArrayInputStream resource = pricingService.generateTestCaseScenarioExcel(testsetid);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=TestCaseResult.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers) // add headers if any
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(new InputStreamResource(resource));
+     }
+ @PostMapping(value = "/uploadProcessSelectedTestCaseFile",consumes = "multipart/form-data")
+	
+	public ResponseEntity<PricingTestCaseResult> uploadProcessSelectedTestCaseFile(@RequestParam("uploadProcessSelectedTestCaseFile") MultipartFile uploadProcessSelectedTestCaseFile) throws IllegalStateException, IOException, InvalidFormatException {
+		 
+		 return ResponseEntity.ok(pricingService.selectedTestCaseExecution(uploadProcessSelectedTestCaseFile));
+		
+	}
 }
